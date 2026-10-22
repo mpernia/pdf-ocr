@@ -23,7 +23,7 @@ final class OcrFallbackTextExtractorTest extends TestCase
             }
         };
         $recognizer = new class implements PageTextRecognizerInterface {
-            public function recognize(string $imagePath, ?string $language = null): string
+            public function recognize(string $imagePath, ?string $language = null): TextExtractionResult
             {
                 throw new \LogicException('Recognizer should not be called.');
             }
@@ -56,9 +56,9 @@ final class OcrFallbackTextExtractorTest extends TestCase
             }
         };
         $recognizer = new class implements PageTextRecognizerInterface {
-            public function recognize(string $imagePath, ?string $language = null): string
+            public function recognize(string $imagePath, ?string $language = null): TextExtractionResult
             {
-                return 'Recognized by OCR';
+                return new TextExtractionResult('Recognized by OCR', 'ocr', 91.5);
             }
         };
 
@@ -73,6 +73,7 @@ final class OcrFallbackTextExtractorTest extends TestCase
 
         self::assertSame('Recognized by OCR', $result->text);
         self::assertSame('ocr', $result->method);
+        self::assertSame(91.5, $result->confidence);
         self::assertFileDoesNotExist($imagePath);
     }
 }

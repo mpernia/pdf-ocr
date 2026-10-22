@@ -35,12 +35,15 @@ final class OcrPipelineTest extends TestCase
         try {
             self::assertFileExists($image);
 
-            $text = (new TesseractCliRecognizer())->recognize($image);
+            $result = (new TesseractCliRecognizer())->recognize($image);
         } finally {
             @unlink($image);
         }
 
-        self::assertStringContainsStringIgnoringCase('factura', $text);
+        self::assertStringContainsStringIgnoringCase('factura', $result->text);
+        self::assertNotNull($result->confidence);
+        self::assertGreaterThan(0.0, $result->confidence);
+        self::assertLessThanOrEqual(100.0, $result->confidence);
     }
 
     public function testTheFallbackExtractorRendersAndRecognisesWhenNativeTextIsShort(): void
@@ -58,6 +61,8 @@ final class OcrPipelineTest extends TestCase
 
         self::assertSame('ocr', $result->method);
         self::assertStringContainsStringIgnoringCase('factura', $result->text);
+        self::assertNotNull($result->confidence);
+        self::assertGreaterThan(0.0, $result->confidence);
     }
 
     private static function requireBinary(string $binary): void

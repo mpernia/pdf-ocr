@@ -40,9 +40,9 @@ final readonly class OcrFallbackTextExtractor implements PageTextExtractorInterf
         $imagePath = $this->renderer->renderPage($pdfPath, $pageNumber, $this->dpi);
 
         try {
-            $recognizedText = $this->recognizer->recognize($imagePath, $this->language);
+            $recognized = $this->recognizer->recognize($imagePath, $this->language);
 
-            return new TextExtractionResult($recognizedText, 'ocr');
+            return new TextExtractionResult($recognized->text, 'ocr', $recognized->confidence);
         } finally {
             if (is_file($imagePath)) {
                 @unlink($imagePath);

@@ -41,7 +41,7 @@ $firstPage = $document->getPage(1); // Page numbers are 1-based.
 - `PdfReaderInterface`: opens a PDF and returns a generic document.
 - `PdfDocumentInterface`: generic file metadata and page access.
 - `PdfPageInterface`: generic page number, text, and metadata.
-- `PageTextRecognizerInterface`: extension point for OCR engines.
+- `PageTextRecognizerInterface`: extension point for OCR engines; returns a `TextExtractionResult`, so a recogniser reports its text and its own confidence.
 - `PageTextExtractorInterface`: decides the text of a page from its native text and, optionally, a recognizer.
 - `PageTextRendererInterface`: turns a PDF page into an image, the input an OCR engine needs.
 - `PdfParserReader`: default adapter for text already embedded in the PDF.
@@ -80,7 +80,7 @@ $reader = new PdfParserReader(
 );
 ```
 
-- `TesseractCliRecognizer(string $binary = 'tesseract')` runs `tesseract <image> stdout [-l <lang>]`.
+- `TesseractCliRecognizer(string $binary = 'tesseract')` runs `tesseract <image> stdout [-l <lang>] tsv`. It reads Tesseract's TSV output, so the returned `TextExtractionResult` carries the average confidence of the words actually recognised (0–100), or `null` when the page produced no text. `OcrFallbackTextExtractor` propagates that confidence, which makes it easy to flag low-quality recognitions.
 - `PopplerPdfPageRenderer(string $binary = 'pdftoppm', ?string $temporaryDirectory = null)` renders one page to a PNG (`dpi` 72–600) and returns its path, which the caller owns. It needs system fonts: without them `pdftoppm` exits with an error and the renderer throws a `RuntimeException` carrying its stderr.
 
 ## Error handling
