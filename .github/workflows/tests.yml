@@ -24,6 +24,10 @@ jobs:
 
       - run: composer install --no-interaction --no-progress
 
+      # The OCR pipeline test runs for real instead of being skipped.
+      - name: Install OCR binaries
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr poppler-utils fonts-dejavu-core
+
       - run: composer test
 
       - run: composer stan

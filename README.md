@@ -9,6 +9,7 @@ A small, extensible PHP package for reading PDF files as structured documents. I
 - PHP 8.2+
 - Composer
 - Optional, only if you use the bundled adapters: `tesseract` and/or `pdftoppm` available on `PATH`
+- For rendering: fonts installed in the system. `pdftoppm` fails with "Couldn't find a font" and writes no image on a bare container, so a slim PHP image needs at least one font package (`ttf-dejavu` on Alpine, `fonts-dejavu-core` on Debian/Ubuntu)
 
 ## Install
 
@@ -80,7 +81,7 @@ $reader = new PdfParserReader(
 ```
 
 - `TesseractCliRecognizer(string $binary = 'tesseract')` runs `tesseract <image> stdout [-l <lang>]`.
-- `PopplerPdfPageRenderer(string $binary = 'pdftoppm', ?string $temporaryDirectory = null)` renders one page to a PNG (`dpi` 72–600) and returns its path, which the caller owns.
+- `PopplerPdfPageRenderer(string $binary = 'pdftoppm', ?string $temporaryDirectory = null)` renders one page to a PNG (`dpi` 72–600) and returns its path, which the caller owns. It needs system fonts: without them `pdftoppm` exits with an error and the renderer throws a `RuntimeException` carrying its stderr.
 
 ## Error handling
 
